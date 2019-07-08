@@ -24,6 +24,27 @@ def test_data(path_to_example_data = FLARE_dir + '/data/package_example_data/Syn
     return data
 
 
+def bluetides_data(path_to_data,dust=True):
+    bluetides_directory='/home/mmarshal/BLUETIDES/BlueTides/'
+    path_to_data=bluetides_directory + path_to_data
+
+    data = empty()
+    
+    data.X = np.load(path_to_data+'/X.npy')
+    data.Y = np.load(path_to_data+'/Y.npy')
+    data.Z = np.load(path_to_data+'/Z.npy')
+    data.BHposition = np.load(path_to_data+'/BHposition.npy')
+    data.VX = np.load(path_to_data+'/VX.npy')
+    data.VY = np.load(path_to_data+'/VY.npy')
+    data.VZ = np.load(path_to_data+'/VZ.npy')
+    data.Ages = np.load(path_to_data+'/Ages.npy') # age of each star particle in Myr 
+    data.Metallicities = np.load(path_to_data+'/Metallicities.npy') # mass fraction of stars in metals (Z)
+    data.Masses = np.ones(data.Ages.shape) * 1E10*5.90556119E-05/0.697 # mass of each star particle in M_sol . NOTE: this value is for BLUETIDES in h-less units.
+    if dust:
+      data.MetSurfaceDensities = np.load(path_to_data+'/MetSurfaceDensities.npy') # surface density of metals along line of sight to each star particle. Used for calculating dust.
+    return data
+
+
 class get_object_data():
 
     def __init__(self, snap, ID, subID, data_path = FLARE_dir + 'simulations/BlueTides/all'):
