@@ -23,14 +23,15 @@ smoothing = ('adaptive', 16)
 smoothing = ('convolved_gaussian', 0.2)
 
 model = models.define_model('BPASSv2.2.1.binary/ModSalpeter_300') # DEFINE SED GRID - 
-model.dust = {'A': 5.2, 'slope': -1.0} # DEFINE DUST MODEL - these are the calibrated z=8 values for the dust model
+model.dust = {'slope': -1.0} # define dust curve
+
 
 intrinsic_model = models.define_model('BPASSv2.2.1.binary/ModSalpeter_300') # DEFINE SED GRID - 
 intrinsic_model.dust = False # DEFINE DUST MODEL - these are the calibrated z=8 values for the dust model
 
 
 
-filters = FLARE.filters.FAKE
+filters = FLARE.filters.TH
 
 F = FLARE.filters.add_filters(filters, new_lam = model.lam) 
 
@@ -40,9 +41,14 @@ intrinsic_model.create_Lnu_grid(F)
 
 test = SynthObs.test_data() # --- read in some test data
 
-L = {f: models.generate_Lnu_array(model, test.Masses, test.Ages, test.Metallicities, test.MetSurfaceDensities, F, f) for f in filters}
+# --- calculate V-band (550nm) optical depth for each star particle
+A = 5.2
+test.tauVs = (10**A) * test.MetSurfaceDensities 
 
-L.update({'intrinsic_'+f: models.generate_Lnu_array(intrinsic_model, test.Masses, test.Ages, test.Metallicities, test.MetSurfaceDensities, F, f) for f in filters})
+
+L = {f: models.generate_Lnu_array(model, test.Masses, test.Ages, test.Metallicities, test.tauVs, F, f) for f in filters}
+
+L.update({'intrinsic_'+f: models.generate_Lnu_array(intrinsic_model, test.Masses, test.Ages, test.Metallicities, test.tauVs, F, f) for f in filters})
 
 
 
@@ -74,14 +80,7 @@ for i, f in enumerate(filters):
     
     # --- add labels and guide lines
     
-    fn = f.split('.')[-1]
-    
-    if fn == '1500':
-        label = 'FUV'
-    elif fn == '2500':
-        label = 'NUV'
-    else:
-        label = fn[0]
+    label = f.split('.')[-1]
 
         
     axes[0,i].text(0.5, 0.9, r'$\rm\bf{0}$'.format(label), fontsize = 10, color='1.0', alpha = 1.0, horizontalalignment='center', verticalalignment='center', transform=axes[0,i].transAxes)
@@ -113,10 +112,17 @@ fig.clf()
 
 
 
+<<<<<<< HEAD
 RGB = np.zeros((imgs['FAKE.FAKE.1500'].data.shape[0],imgs['FAKE.FAKE.1500'].data.shape[1], 3), dtype=float)
 RGB[:,:,2] = imgs['FAKE.FAKE.1500'].data/mx
 RGB[:,:,1] = imgs['FAKE.FAKE.Vth'].data/mx
 RGB[:,:,0] = imgs['FAKE.FAKE.Hth'].data/mx
+=======
+RGB = np.zeros((imgs['FAKE.TH.FUV'].data.shape[0],imgs['FAKE.TH.FUV'].data.shape[1], 3), dtype=float)
+RGB[:,:,2] = imgs['FAKE.TH.FUV'].data/mx
+RGB[:,:,1] = imgs['FAKE.TH.V'].data/mx
+RGB[:,:,0] = imgs['FAKE.TH.H'].data/mx
+>>>>>>> 641c8e6106411714e77f31833c1a4c72a36b1158
 
 
 
