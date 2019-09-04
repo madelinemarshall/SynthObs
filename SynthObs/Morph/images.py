@@ -381,7 +381,6 @@ def point(flux, filter, target_width_arcsec, resampling_factor = False, pixel_sc
     xx = yy = np.linspace(-(width_arcsec/native_pixel_scale)/2, width_arcsec/native_pixel_scale/2, ndim_super) # native pixel units
 
     psf = PSF.f(xx, yy)
-    
     psf /= np.sum(psf)
     
     # --- renormalise PSF
@@ -390,26 +389,25 @@ def point(flux, filter, target_width_arcsec, resampling_factor = False, pixel_sc
     
     d = int(PSF.ndim*width_arcsec/PSF.width/2)
     c = PSF.ndim // 2
+
     psf_data = np.sum(PSF.data[c-d:c+d+1, c-d:c+d+1])/np.sum(PSF.data)
-    if verbose: print('sum(psf_data): {0:.2f}'.format(psf_data))
+    if verbose: print('sum(psf_data): {}'.format(psf_data))
     
 
-    if verbose: print('sum(PSF): {0:.2f}'.format(np.sum(psf)))
+    if verbose: print('sum(PSF): {}'.format(np.sum(psf)))
 
     imgs.super.data = convolve_fft(imgs.super.simple, psf)*psf_data
 
-    if verbose: print('sum(super.simple): {0:.2f}'.format(np.sum(imgs.super.simple)))
-    if verbose: print('sum(super.data): {0:.2f}'.format(np.sum(imgs.super.data)))
+    if verbose: print('sum(super.simple): {}'.format(np.sum(imgs.super.simple)))
+    if verbose: print('sum(super.data): {}'.format(np.sum(imgs.super.data)))
 
     # --- resample back pixel scale
 
     imgs.img = empty()
     imgs.img.ndim = ndim
     imgs.img.pixel_scale = pixel_scale
-    
     imgs.img.no_PSF = rebin(imgs.super.simple, (ndim, ndim))
     imgs.img.data = rebin(imgs.super.data, (ndim, ndim))
-    
      
     # imgs.img.data = convolve(imgs.img.data, PSF.charge_diffusion_kernel)
     

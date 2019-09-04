@@ -49,6 +49,9 @@ class WebbPSF():
         self.data = fits.open(fn)[0].data
 
         Ndim = self.data.shape[0]
+        self.ndim = Ndim        
+
+        self.width = Ndim*FLARE.filters.pixel_scale[f]/resampling_factor # "
 
         x = y = np.linspace(-(Ndim/2.)/resampling_factor, (Ndim/2.)/resampling_factor, Ndim)
 
@@ -87,7 +90,7 @@ class HubblePSF():
 
         if charge_diffusion and sub != 1:
         
-            resampled_charge_diffusion_kernel = resize(self.charge_diffusion_kernel, (5*sub, 5*sub), anti_aliasing = False)
+            resampled_charge_diffusion_kernel = resize(self.charge_diffusion_kernel, (5*sub, 5*sub))
             
             self.data = convolve_fft(self.data, resampled_charge_diffusion_kernel)
 
