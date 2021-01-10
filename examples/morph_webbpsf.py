@@ -17,7 +17,7 @@ width = 10
 
 filters = FLARE.filters.NIRCam_W # all NIRCam wide filters
 
-filters = ['JWST.NIRCAM.F115W','JWST.NIRCAM.F150W']
+filters = ['JWST.NIRCAM.F360M','JWST.NIRCAM.F200W','JWST.NIRCAM.F150W']#['JWST.NIRCAM.F115W','JWST.NIRCAM.F150W']
 
 print(filters)
 
